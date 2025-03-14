@@ -5,3 +5,8 @@ custom.el
 /eln-cache/
 /elpaca/
 /goty/goty-privates.el
+.mc-lists.el
+history
+/elpa/
+places
+/transient/
