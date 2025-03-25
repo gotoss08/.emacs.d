@@ -62,11 +62,22 @@
   (elpaca-use-package-mode))
 
 ;;;
+;;; Load path
+;;;
+
+(add-to-list 'load-path "~/.emacs.d/lisp")
+(add-to-list 'load-path "~/.emacs.d/goty")
+
+;;;
 ;;; Personal info
 ;;;
 
 (setq user-full-name "Pavel Pereverzev")
 (setq user-mail-address "gotoss08@gmail.com")
+
+(if (eq system-type 'windows-nt)
+    (setq one-drive-path "~/OneDrive/org/")
+  (setq one-drive-path "/mnt/c/Users/gotos/OneDrive/org/"))
 
 ;;;
 ;;; Encoding
@@ -78,37 +89,68 @@
 (add-hook 'before-save-hook 'utf-8-unix)
 
 ;;;
+;;; Tramp
+;;;
+
+(setq tramp-verbose 1)
+
+;;;
 ;;; Private variables
 ;;;
 
-(add-to-list 'load-path "~/.emacs.d/goty")
 (require 'goty-privates)
 
 ;;;
 ;;; Fonts
 ;;;
 
-;; (set-frame-font "Iosevka 18" nil t)
-;;(setq coding-font "Iosevka")
-(setq coding-font "Fira Code")
-(set-face-attribute 'default nil :family coding-font :height 160)
-(set-face-attribute 'fixed-pitch nil :family coding-font)
-(set-face-attribute 'variable-pitch nil :family "Aptos Serif")
+;; Don’t compact font caches during GC.
+;; (setq inhibit-compacting-font-caches t)
 
-(set-face-attribute 'bold nil :weight 'regular)
-(set-face-attribute 'bold-italic nil :weight 'regular)
+(defun goty/change-font (font-name)
+  (set-face-attribute 'default nil :family font-name :weight 'regular :height 150)
+  (set-face-attribute 'fixed-pitch nil :family font-name)
+  ;; (set-face-attribute 'bold nil :weight 'regular)
+  ;; (set-face-attribute 'bold-italic nil :weight 'regular)
+  )
+
+;; main fonts
+;; (goty/change-font "Iosevka NF")
+;; (goty/change-font "IosevkaTerm NF")
+;; (goty/change-font "IosevkaTermSlab NF")
+;; (goty/change-font "ZedMono NF")
+;; (goty/change-font "VictorMono NF")
+;; (goty/change-font "Inconsolata LGC Nerd Font")
+;; (goty/change-font "JetBrainsMono NF")
+;; (goty/change-font "Terminess Nerd Font Mono")
+
+;; too meh
+;; (goty/change-font "CaskaydiaCove NF")
+;; (goty/change-font "FiraCode Nerd Font")
+;; (goty/change-font "Hack Nerd Font")
+
+;; no cyrillic
+;; (goty/change-font "ComicShannsMono Nerd Font")
+;; (goty/change-font "Hurmit Nerd Font")
+
+;; (set-frame-font "terminus-32" nil t)
+;; (set-frame-font "Terminess Nerd Font-16" nil t)
+
+(set-frame-font "ZedMono NF-15" nil t)
+;; (set-face-attribute 'variable-pitch nil :family "Aptos" :height 130)
+;; (set-face-attribute 'variable-pitch nil :family "Aptos Serif" :height 140)
+(set-face-attribute 'variable-pitch nil :family "SF Pro Text" :height 130)
+
 (set-display-table-slot standard-display-table 'truncation (make-glyph-code ?…))
 (set-display-table-slot standard-display-table 'wrap (make-glyph-code ?–))
-
-(dolist (face '(default fixed-pitch))
-  (set-face-attribute `,face nil :font "Fira Code"))
 
 ;;;
 ;;; Frame
 ;;;
 
+(setq frame-inhibit-implied-resize t) ;; prevent resize window on startup
 (setq default-frame-alist
-      '((height . 44) (width  . 81) (left-fringe . 0) (right-fringe . 0)
+      '((height . 32) (width  . 100) (left-fringe . 0) (right-fringe . 0)
         (internal-border-width . 32) (vertical-scroll-bars . nil)
         (bottom-divider-width . 0) (right-divider-width . 0)
         (undecorated-round . t)))
@@ -122,9 +164,9 @@
 (tool-bar-mode -1)
 (menu-bar-mode -1)
 (blink-cursor-mode -1)
-;; (global-hl-line-mode t)
 (pixel-scroll-precision-mode t)
 (electric-pair-mode t)
+;; (global-hl-line-mode t)
 
 ;;;
 ;;; Initial misc
@@ -133,8 +175,7 @@
 (setq inhibit-startup-message t)
 (setq inhibit-startup-echo-area-message t)
 (setq visible-bell t)
-(setq frame-inhibit-implied-resize t) ;; prevent resize window on startup
-(setq default-frame-alist '((width . 100) (height . 30)))
+(setq default-input-method "russian-computer")
 (setq use-short-answers t)
 (setq confirm-nonexistent-file-or-buffer nil)
 (save-place-mode t) ;; When you visit a file, point goes to the last place where it was when you previously visited the same file
@@ -143,19 +184,22 @@
 (setq read-buffer-completion-ignore-case t)
 (setq read-file-name-completion-ignore-case t)
 (setq completion-ignore-case t)
-(setq default-input-method "russian-computer")
 
+;;;
 ;;; Spaces
+;;;
+
 (setq backward-delete-char-untabify-method 'hungry) ;; AWESOME
 (setq-default tab-width 4)
 (setq-default indent-tabs-mode nil)
 (setq-default show-trailing-whitespace t)
-;; (set-face-background 'trailing-whitespace "yellow")
 (setq-default electric-indent-inhibit t) ;; AWESOME
-;; (global-whitespace-mode) ; Enable whitespace mode everywhere
 (add-hook 'after-save-hook 'delete-trailing-whitespace)
 
+;;;
 ;;; Backups, autosaving, lock-files...
+;;;
+
 (setq auto-save-default nil)
 (setq create-lockfiles nil)
 (setq make-backup-files t)
@@ -166,81 +210,80 @@
 ;;; Theme
 ;;;
 
-(add-to-list 'load-path "~/.emacs.d/lisp")
-(require 'nano-theme)
-;;(mapc #'disable-theme custom-enabled-themes)
-;;(nano-dark)
+(mapc #'disable-theme custom-enabled-themes)
 
-;;; Theme settings
+(defun disable-all-themes ()
+  "Disable all active themes."
+  (dolist (i custom-enabled-themes)
+    (disable-theme i)))
 
-(use-package modus-themes
+(defadvice load-theme (before disable-themes-first activate)
+  (disable-all-themes))
+
+(use-package solarized-theme
   :ensure t
-  :demand t
-  :bind
-  (("<f5>" . modus-themes-toggle))
   :config
-  (setq
-   modus-themes-to-toggle '(modus-vivendi-tinted modus-operandi)
-   modus-themes-mixed-fonts t
-   ;; modus-themes-variable-pitch-ui t
-   ;; modus-themes-italic-constructs t
-   ;; modus-themes-bold-constructs t
-   ;; modus-themes-completions '((t . (bold)))
-   ;; modus-themes-prompts '(bold)
-   ;; modus-themes-headings
-   ;; '((agenda-structure . (variable-pitch light 2.2))
-   ;;   (agenda-date . (variable-pitch regular 1.3))
-   ;;   (t . (regular 1.15)))
-   )
-
-  (setq modus-themes-common-palette-overrides
-        '(
-          ;; (cursor cyan-intense)
-          ;; (comment magenta-faint)
-          ;; (bg-paren-match bg-magenta-subtle)
-          ;; (fg-paren-match magenta)
-          (border-mode-line-active unspecified)
-          (border-mode-line-inactive unspecified)
-          ))
-
-  (mapc #'disable-theme custom-enabled-themes)
-  (modus-themes-load-theme 'modus-vivendi-tinted)
-  )
-
-(defun my-modus-themes-custom-faces (&rest _)
-  (modus-themes-with-colors
-    (custom-set-faces
-     `(header-line ((,c
-                     :background ,bg-dim
-                     :underline nil
-                     :box (:line-width 1 :color ,bg-main)
-                     :inherit lazy-highlight
-                     )))
-     `(header-line-inactive ((,c
-                     :background ,bg-main
-                     :underline nil
-                     :box (:line-width 1 :color ,bg-main)
-                     :inherit lazy-highlight
-                     )))
-     `(mode-line ((,c
-                   :background ,bg-main
-                   :underline ,bg-active
-                   :height 40
-                   :overline nil
-                   :box nil
-                   )))
-     `(mode-line-inactive ((,c
-                            :background ,bg-main
-                            :underline ,bg-active
-                            :height 40
-                            :overline nil
-                            :box nil
-                            )))
-     )))
-
-(add-hook 'modus-themes-after-load-theme-hook #'my-modus-themes-custom-faces)
+  (load-theme 'solarized-wombat-dark))
 
 ;; (load-theme 'wombat)
+;; (require 'goty-modus-themes)
+;; (require 'nano-theme)
+;; (nano-dark)
+
+(use-package mood-line
+  :ensure t
+  ;; :config
+  ;; (mood-line-mode)
+  ;; Use pretty Fira Code-compatible glyphs
+  :custom
+  (mood-line-glyph-alist mood-line-glyphs-fira-code))
+
+(use-package nerd-icons
+  :ensure t
+  :custom
+  (nerd-icons-font-family "Symbols Nerd Font Mono"))
+
+(use-package doom-modeline
+  :ensure t)
+;;  :init (doom-modeline-mode 1))
+
+(setq-default mode-line-format nil)
+(require 'nano-modeline)
+;; (setq nano-modeline-position)
+(nano-modeline-text-mode t)
+(add-hook 'prog-mode-hook            #'nano-modeline-prog-mode)
+;; (add-hook 'text-mode-hook            #'nano-modeline-text-mode)
+(add-hook 'org-mode-hook             #'nano-modeline-org-mode)
+(add-hook 'pdf-view-mode-hook        #'nano-modeline-pdf-mode)
+(add-hook 'mu4e-headers-mode-hook    #'nano-modeline-mu4e-headers-mode)
+(add-hook 'mu4e-view-mode-hook       #'nano-modeline-mu4e-message-mode)
+(add-hook 'elfeed-show-mode-hook     #'nano-modeline-elfeed-entry-mode)
+(add-hook 'elfeed-search-mode-hook   #'nano-modeline-elfeed-search-mode)
+(add-hook 'term-mode-hook            #'nano-modeline-term-mode)
+(add-hook 'xwidget-webkit-mode-hook  #'nano-modeline-xwidget-mode)
+(add-hook 'messages-buffer-mode-hook #'nano-modeline-message-mode)
+(add-hook 'org-capture-mode-hook     #'nano-modeline-org-capture-mode)
+(add-hook 'org-agenda-mode-hook      #'nano-modeline-org-agenda-mode)
+
+(use-package doom-themes
+  :ensure t
+  :config
+  (setq doom-themes-enable-bold t
+        doom-themes-enable-italic nil
+        doom-themes-padded-modeline t)
+  (doom-themes-visual-bell-config)
+  (doom-themes-org-config))
+
+(setq-default header-line-format mode-line-format)
+
+(use-package spacemacs-theme
+  :ensure t)
+
+;; (require 'goty-header-modeline)
+;; (goty/header-modeline)
+
+;; (require 'goty-minibuffer)
+;; (goty/minibuffer)
 
 ;;; Org mode
 
@@ -249,30 +292,35 @@
      (call-interactively 'org-store-link)
      (org-capture nil "i"))
 
-(defun my-org-mode-hook ()
-  (visual-line-mode t)
-  (variable-pitch-mode t))
-
 (use-package org
+  ;; :defer t
   :ensure nil
   :hook
-  (org-mode . my-org-mode-hook)
+  (org-mode . (lambda ()
+                (variable-pitch-mode t)
+                ;; (visual-line-mode t)
+                (org-indent-mode t)))
   (org-capture-mode . delete-other-windows)
   ;; :init
   ;; (setq org-time-stamp-custom-formats '("<%d/%m/%y %a>" . "<%d/%m/%y %a %H:%M>")
   ;;       org-display-custom-times t)
   :config
+  (setq org-M-RET-may-split-line '((default . nil)))
   (setq org-ellipsis " ▼"
         org-hide-emphasis-markers t
         org-src-fontify-natively t
 	    org-log-done t
 	    ;; org-default-notes-file "~/org/todo.org"
-	    org-directory (concat (expand-file-name "~/") "OneDrive/org")
+	    org-directory one-drive-path
 	    org-agenda-files (list "inbox.org" "agenda.org"))
   (setq org-capture-templates
        `(("i" "Inbox" entry  (file "inbox.org")
         ,(concat "* TODO %?\n"
                  "/Entered on/ %U"))))
+  (setq org-cycle-separator-lines 2)
+  (setq org-adapt-indentation t)
+  (setq org-indent-indentation-per-level 4)
+  (setq org-hide-leading-stars t)
   :bind
   (("C-c a" . org-agenda)
    ("C-c c" . org-capture)
@@ -281,7 +329,7 @@
 (use-package org-bullets
   :ensure t
   :config
-  (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+  (add-hook 'org-mode-hook (lambda () (org-bullets-mode t))))
 
 ;;; Packages config
 
@@ -289,36 +337,28 @@
   :init
   (setq completion-styles '(flex))
   :config
-  (setq icomplete-delay-completions-threshold 0)
-  (setq icomplete-max-delay-chars 0)
-  (setq icomplete-compute-delay 0)
-  (setq icomplete-show-matches-on-no-input t)
-  (setq icomplete-tidy-shadowed-file-names t)
-  (setq icomplete-separator " · ")
-  (setq icomplete-in-buffer t)
-  ;; (icomplete-vertical-mode t)
-  (fido-vertical-mode t)
-  ;; (fido-mode t)
-  (advice-add 'completion-at-point
-              :after #'minibuffer-hide-completions))
-
-;;; Minibuffer completion
-
-(setq tab-always-indent 'complete
+  (setq tab-always-indent 'complete
+      icomplete-tidy-shadowed-file-names t
       icomplete-delay-completions-threshold 0
       icomplete-compute-delay 0
       icomplete-show-matches-on-no-input t
       icomplete-hide-common-prefix nil
       icomplete-prospects-height 9
-      icomplete-separator " . "
+      icomplete-separator " · "
       icomplete-with-completion-tables t
       icomplete-in-buffer t
       icomplete-max-delay-chars 0
       icomplete-scroll t
       resize-mini-windows 'grow-only
       icomplete-matches-format nil)
-(bind-key "TAB" #'icomplete-force-complete icomplete-minibuffer-map)
-(bind-key "RET" #'icomplete-force-complete-and-exit icomplete-minibuffer-map)
+  ;; (icomplete-vertical-mode t)
+  (fido-vertical-mode t)
+  ;; (fido-mode t)
+  (advice-add 'completion-at-point
+              :after #'minibuffer-hide-completions))
+
+;; (bind-key "TAB" #'icomplete-force-complete icomplete-minibuffer-map)
+;; (bind-key "RET" #'icomplete-force-complete-and-exit icomplete-minibuffer-map)
 
 (use-package completion-preview
   :hook (prog-mode . completion-preview-mode)
@@ -343,12 +383,6 @@
 (use-package restclient
   :ensure t)
 
-;; (use-package solarized-theme
-;;   :ensure t
-;;   :config
-;;   (mapc #'disable-theme custom-enabled-themes)
-;;   (load-theme 'solarized-wombat-dark))
-
 (use-package move-dup
   :ensure t
   :bind (("M-p"   . move-dup-move-lines-up)
@@ -364,6 +398,10 @@
    ("C-<" . mc/mark-prev-like-this)
    ("C-c C-<" . mc/mark-all-like-this)))
 
+;; TODO: add new binds for multiple cursors
+;; mc/skip-to-next-like-this
+;; mc/skip-to-previous-like-this
+
 (use-package expand-region
   :ensure t
   :bind
@@ -378,13 +416,12 @@
          ("M-y" . consult-yank-from-kill-ring)
          ("C-c f l" . consult-focus-lines)))
 
-;; mc/skip-to-next-like-this
-;; mc/skip-to-previous-like-this
-
+;;;
 ;;; Custom keybidings
+;;;
 
 (global-set-key (kbd "C-c e c") (lambda () (interactive) (find-file user-init-file)))
-(global-set-key (kbd "C-c e o") (lambda () (interactive) (find-file "~/OneDrive/org/")))
+(global-set-key (kbd "C-c e o") (lambda () (interactive) (find-file one-drive-path)))
 
 (bind-key "M-/" #'hippie-expand)
 (bind-key "C-x C-b" #'ibuffer)
@@ -392,6 +429,7 @@
 (bind-key "C-r" #'isearch-backward-regexp)
 (bind-key "C-M-s" #'isearch-forward)
 (bind-key "C-M-r" #'isearch-backward)
+(bind-key "<f2>" #'toggle-input-method)
 
 ;; source: https://gist.github.com/rougier/8d5a712aa43e3cc69e7b0e325c84eab4
 (bind-key "C-x k" #'kill-current-buffer)
@@ -401,40 +439,9 @@
 (bind-key "C-<wheel-up>" nil) ;; No text resize via mouse scroll
 (bind-key "C-<wheel-down>" nil) ;; No text resize via mouse scroll
 
-;;; Header & mode lines
-
-(setq-default mode-line-format "")
-(setq-default header-line-format
-  '(:eval
-    (let ((prefix (cond (buffer-read-only     '("RO" . isearch))
-                        ((buffer-modified-p)  '("**" . error))
-                        (t                    '("RW" . help-key-binding))))
-          (mode (concat "(" (downcase (cond ((consp mode-name) (car mode-name))
-                                            ((stringp mode-name) mode-name)
-                                            (t "unknow")))
-                        " mode)"))
-          (coords (format-mode-line "%l:%c ")))
-      (list
-       (propertize " " 'face (cdr prefix)  'display '(raise -0.25))
-       (propertize (car prefix) 'face (cdr prefix))
-       (propertize " " 'face (cdr prefix) 'display '(raise +0.25))
-       (propertize (format-mode-line " %b ") 'face 'icomplete-first-match)
-       (propertize mode)
-       (propertize " " 'display `(space :align-to (- right ,(length coords))))
-       (propertize coords 'face 'shadow)))))
-
-;;; Minibuffer setup
-
-(defun minibuffer-setup ()
-  (set-window-margins nil 3 0)
-  (let ((inhibit-read-only t))
-    (add-text-properties (point-min) (+ (point-min) 1)
-      `(display ((margin left-margin)
-                 ,(format "# %s" (substring (minibuffer-prompt) 0 1))))))
-  (setq truncate-lines t))
-(add-hook 'minibuffer-setup-hook #'minibuffer-setup)
-
+;;;
 ;;; End
+;;;
 
 (defun display-startup-echo-area-message ()
   (let ((init-time (float-time (time-subtract (current-time) init-start-time)))
