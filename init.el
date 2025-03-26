@@ -156,6 +156,8 @@
         (undecorated-round . t)))
 (modify-frame-parameters nil default-frame-alist)
 (setq-default pop-up-windows nil)
+(setq inhibit-double-buffering t)  ;; Убирает двойную буферизацию
+(setq redisplay-dont-pause t)      ;; Улучшает обновление экрана
 
 ;;;
 ;;; Disable && enable modes
@@ -166,7 +168,7 @@
 (blink-cursor-mode -1)
 (pixel-scroll-precision-mode t)
 (electric-pair-mode t)
-;; (global-hl-line-mode t)
+(global-hl-line-mode t)
 
 ;;;
 ;;; Initial misc
@@ -203,7 +205,7 @@
 (setq auto-save-default nil)
 (setq create-lockfiles nil)
 (setq make-backup-files t)
-(setq backup-directory-alist '(("." . (expand-file-name "custom.el" user-emacs-directory))))
+(setq backup-directory-alist '(("." . (expand-file-name "backups" user-emacs-directory))))
 (setq backup-by-copying t) ;; Backups dont break file creation time
 
 ;;;
