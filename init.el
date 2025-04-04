@@ -76,8 +76,10 @@
 (setq user-mail-address "gotoss08@gmail.com")
 
 (if (eq system-type 'windows-nt)
-    (setq one-drive-path "~/OneDrive/org/")
-  (setq one-drive-path "/mnt/c/Users/gotos/OneDrive/org/"))
+    (setq my-onedrive-path "~/OneDrive/")
+  (setq my-onedrive-path "/mnt/c/Users/gotos/OneDrive/"))
+
+(setq my-org-path (expand-file-name "org" my-onedrive-path))
 
 ;;;
 ;;; Encoding
@@ -109,7 +111,7 @@
 
 (defun goty/change-font (font-name)
   (set-face-attribute 'default nil :family font-name :weight 'regular :height 150)
-  (set-face-attribute 'fixed-pitch nil :family font-name)
+  (set-face-attribute 'fixed-pitch nil :family font-name :weight 'regular)
   ;; (set-face-attribute 'bold nil :weight 'regular)
   ;; (set-face-attribute 'bold-italic nil :weight 'regular)
   )
@@ -136,7 +138,22 @@
 ;; (set-frame-font "terminus-32" nil t)
 ;; (set-frame-font "Terminess Nerd Font-16" nil t)
 
-(set-frame-font "ZedMono NF-15" nil t)
+;; (goty/change-font "MapleMono")
+;; (set-frame-font "MapleMono-15")
+
+;; (set-frame-font "MapleMono-15" nil t)
+;; (add-to-list 'default-frame-alist '(font . "MapleMono-15"))
+;; (set-face-attribute 'default nil
+;;                     :family "MapleMono"
+;;                     :height 150
+;;                     :weight 'regular)
+
+;; (set-face-attribute 'fixed-pitch nil :inherit 'default)
+
+(goty/change-font "MapleMono")
+
+;; (set-frame-font "ZedMono NF-15" nil t)
+
 ;; (set-face-attribute 'variable-pitch nil :family "Aptos" :height 130)
 ;; (set-face-attribute 'variable-pitch nil :family "Aptos Serif" :height 140)
 (set-face-attribute 'variable-pitch nil :family "SF Pro Text" :height 130)
@@ -153,8 +170,9 @@
       '((height . 32) (width  . 100) (left-fringe . 0) (right-fringe . 0)
         (internal-border-width . 32) (vertical-scroll-bars . nil)
         (bottom-divider-width . 0) (right-divider-width . 0)
-        (undecorated-round . t)))
-(modify-frame-parameters nil default-frame-alist)
+        (undecorated-round . t)
+        (inhibit-double-buffering . t)))
+;; (modify-frame-parameters nil default-frame-alist)
 (setq-default pop-up-windows nil)
 (setq inhibit-double-buffering t)  ;; Убирает двойную буферизацию
 (setq redisplay-dont-pause t)      ;; Улучшает обновление экрана
@@ -313,7 +331,7 @@
         org-src-fontify-natively t
 	    org-log-done t
 	    ;; org-default-notes-file "~/org/todo.org"
-	    org-directory one-drive-path
+	    org-directory my-org-path
 	    org-agenda-files (list "inbox.org" "agenda.org"))
   (setq org-capture-templates
        `(("i" "Inbox" entry  (file "inbox.org")
@@ -323,6 +341,15 @@
   (setq org-adapt-indentation t)
   (setq org-indent-indentation-per-level 4)
   (setq org-hide-leading-stars t)
+  (setq org-publish-project-alist
+      '(("notes"
+         :base-directory my-org-path                                         ; directory with your org files
+         :publishing-directory (expand-file-name "public_html/" my-org-path) ; where HTML files will be stored
+         :publishing-function org-html-publish-to-html
+         :recursive t                                                        ; include subdirectories
+         :with-toc t                                                         ; include table of contents
+         :headline-levels 4                                                  ; max heading depth for export
+         :section-numbers nil)))                                             ; disable section numbers if desired
   :bind
   (("C-c a" . org-agenda)
    ("C-c c" . org-capture)
@@ -418,12 +445,20 @@
          ("M-y" . consult-yank-from-kill-ring)
          ("C-c f l" . consult-focus-lines)))
 
+(use-package wakatime-mode
+  :ensure t
+  :init
+  (setq wakatime-api-key goty/wakatime-api-key)
+  (setq wakatime-cli-path "~/.wakatime/wakatime-cli")
+  :config
+  (global-wakatime-mode t))
+
 ;;;
 ;;; Custom keybidings
 ;;;
 
 (global-set-key (kbd "C-c e c") (lambda () (interactive) (find-file user-init-file)))
-(global-set-key (kbd "C-c e o") (lambda () (interactive) (find-file one-drive-path)))
+(global-set-key (kbd "C-c e o") (lambda () (interactive) (find-file my-org-path)))
 
 (bind-key "M-/" #'hippie-expand)
 (bind-key "C-x C-b" #'ibuffer)
