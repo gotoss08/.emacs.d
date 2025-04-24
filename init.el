@@ -241,9 +241,9 @@
   (disable-all-themes))
 
 (use-package solarized-theme
-  :ensure t
-  :config
-  (load-theme 'solarized-wombat-dark))
+  :ensure t)
+  ;; :config
+  ;; (load-theme 'solarized-wombat-dark))
 
 ;; (load-theme 'wombat)
 ;; (require 'goty-modus-themes)
@@ -292,7 +292,8 @@
         doom-themes-enable-italic nil
         doom-themes-padded-modeline t)
   (doom-themes-visual-bell-config)
-  (doom-themes-org-config))
+  (doom-themes-org-config)
+  (load-theme 'doom-dracula))
 
 (setq-default header-line-format mode-line-format)
 
