@@ -1,0 +1,11 @@
+.cache
+.mc-lists.el
+auto-save-list/
+bookmarks
+custom.el
+eln-cache/
+elpa/
+places
+server/
+tramp
+transient/
