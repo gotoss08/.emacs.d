@@ -20,6 +20,7 @@
 (setq my-org-regulations   (expand-file-name "regulations.org" my-org-path))
 (setq my-org-meetings      (expand-file-name "meetings.org"    my-org-path))
 (setq my-org-projects      (expand-file-name "projects/"       my-org-path))
+(setq my-org-habits-path   (expand-file-name "habits.org"      my-org-path))
 
 ;; Agenda files
 (setq org-agenda-files
@@ -29,7 +30,8 @@
             my-org-someday-path
             my-org-regulations
             my-org-meetings
-	    my-org-projects))
+	    my-org-projects
+	    my-org-habits-path))
 
 ;; UI/Behavior
 (setq org-startup-indented t)
@@ -56,6 +58,9 @@
         ("DONE"     . "green")
         ("CANCELED" . "gray")))
 
+(setq org-fontify-done-headline t)
+(setq org-fontify-whole-heading-line t)
+
 ;; Capture Templates
 (setq org-default-notes-file my-org-inbox-path)
 (setq org-capture-templates
@@ -74,7 +79,7 @@
         ("r" "Регламент" entry (file+headline ,my-org-regulations "Идеи / обсуждение")
          "* TODO %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n")
 
-        ("m" "Совещание" entry (file+datetree ,my-org-meetings)
+        ("m" "Совещание" entry (file+olp+datetree ,my-org-meetings)
          "* %^{Название}\n:PROPERTIES:\n:CREATED: %U\n:ATTENDEES: %^{Участники}\n:END:\n\n** Вопросы\n- %?\n\n** Решения\n- \n\n** Задачи\n- ")))
 
 ;; Agenda commands
@@ -159,6 +164,23 @@
 (global-set-key (kbd "C-c r") (lambda () (interactive) (find-file my-org-someday-path)))
 (global-set-key (kbd "C-c m") (lambda () (interactive) (find-file my-org-meetings)))
 (global-set-key (kbd "C-c e o") (lambda () (interactive) (find-file my-org-path)))
+
+;; (setq org-agenda-custom-commands
+;;       '(("N" "Agenda + TODOs"
+;;          ((agenda "")
+;;           (alltodo "-person")))))
+
+(defun my/org-open-agenda-and-todo ()
+  "Open org agenda on the left and TODO list on the right."
+  (interactive)
+  (delete-other-windows)
+  (let ((agenda-buffer (org-get-agenda-file-buffer (car org-agenda-files))))
+    (org-agenda-list)
+    (split-window-right)
+    (other-window 1)
+    (org-todo-list)))
+
+(global-set-key (kbd "C-c A") #'my/org-open-agenda-and-todo)
 
 ;; Export
 (setq org-html-head-include-default-style nil
