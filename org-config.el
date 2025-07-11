@@ -165,10 +165,19 @@
 (global-set-key (kbd "C-c m") (lambda () (interactive) (find-file my-org-meetings)))
 (global-set-key (kbd "C-c e o") (lambda () (interactive) (find-file my-org-path)))
 
-;; (setq org-agenda-custom-commands
-;;       '(("N" "Agenda + TODOs"
-;;          ((agenda "")
-;;           (alltodo "-person")))))
+(setq org-agenda-custom-commands
+      '(
+	("n" "All (Agenda + TODOs)"
+	 ((agenda "")
+	 (todo "")))
+	("w" "Work only (Agenda + TODOs)"
+	 ((agenda)
+	  (todo))
+	 ((org-agenda-tag-filter-preset '("-Семья" "-Личное"))))
+	))
+	 ;; (org-agenda-category-filter "-Семья"
+	 ;; (agenda)
+	 ;; (todo)))))
 
 (defun my/org-open-agenda-and-todo ()
   "Open org agenda on the left and TODO list on the right."
