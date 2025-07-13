@@ -124,7 +124,7 @@
   :hook
   (prog-mode . smerge-mode))
 
-;; TODO: use fido-mode
+;; TODO: use fido-mode more properly
 (fido-vertical-mode t)
 
 ;;; Key bindings
