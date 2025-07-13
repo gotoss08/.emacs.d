@@ -13,7 +13,8 @@
       '(("elpa" . "https://elpa.gnu.org/packages/")
         ("elpa-devel" . "https://elpa.gnu.org/devel/")
         ("nongnu" . "https://elpa.nongnu.org/nongnu/")
-        ("melpa" . "https://melpa.org/packages/")))
+        ("melpa" . "https://melpa.org/packages/")
+	("org" . "http://orgmode.org/elpa/")))
 (package-initialize)
 
 ;;; Variables
@@ -162,8 +163,4 @@
     "C-c e o" (lambda () (interactive) (find-file my-org-path))
     "C-c e p" (lambda () (interactive) (find-file my-org-projects))
     )
-  (general-define-key
-   :keymaps 'org-mode-map
-   :prefix "C-c e"
-   "t" 'my/org-export-current-tree-to-html-to-desktop)
   )

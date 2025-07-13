@@ -8,6 +8,11 @@
 ;;   (setq my-onedrive-path "/mnt/c/Users/gotos/OneDrive/"))
 ;; (setq my-org-path (expand-file-name "org" my-onedrive-path))
 
+(use-package org
+  :ensure t
+  :pin org
+  :mode (("\\.org$" . org-mode)))
+
 ;; Path to Org
 (setq org-directory (expand-file-name "~/org"))
 (setq my-org-path org-directory)
@@ -21,6 +26,7 @@
 (setq my-org-meetings      (expand-file-name "meetings.org"    my-org-path))
 (setq my-org-projects      (expand-file-name "projects/"       my-org-path))
 (setq my-org-habits-path   (expand-file-name "habits.org"      my-org-path))
+(setq my-org-daily-path    (expand-file-name "daily"           my-org-path))
 
 ;; Agenda files
 (setq org-agenda-files
@@ -45,6 +51,7 @@
 (setq org-log-done 'time)
 (setq org-log-into-drawer t)
 (setq org-startup-folded 'content)
+(setq org-agenda-skip-scheduled-if-done t)
 
 ;; TODO keywords
 (setq org-todo-keywords
@@ -214,6 +221,30 @@
        "_"
        (replace-regexp-in-string "[^[:alnum:]_-]" "_" (org-get-heading t t t t))
        ".html") nil t nil nil))
+
+(general-define-key
+ :keymaps 'org-mode-map
+ :prefix "C-c e"
+ "t" 'my/org-export-current-tree-to-html-to-desktop)
+
+(defun my/org-create-daily-note ()
+  "Create or open an Org mode file named with the current date for daily notes."
+  (interactive)
+  (let* ((notes-dir my-org-daily-path)
+         (file-name (format-time-string "%Y-%m-%d.org" (current-time)))
+         (full-path (expand-file-name file-name notes-dir)))
+    (unless (file-exists-p notes-dir)
+      (make-directory notes-dir t))
+    (find-file full-path)
+    (unless (file-exists-p full-path)
+      (insert (format "#+TITLE: Daily Notes - %s\n" (format-time-string "%Y-%m-%d" (current-time))))
+      (insert (format "#+DATE: %s\n" (format-time-string "%Y-%m-%d %H:%M" (current-time))))
+      (insert (format "#+AUTHOR: %s\n" (user-full-name)))
+      (insert "#+STARTUP: showeverything\n")
+      (insert "\n")
+      )))
+
+(global-set-key (kbd "C-c n d") 'my/org-create-daily-note)
 
 (provide 'org-config)
 ;;; org-config.el ends here
