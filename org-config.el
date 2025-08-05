@@ -165,12 +165,9 @@
 (define-abbrev org-mode-abbrev-table "orghead" "" 'org-skeleton-header)
 
 ;; Keys
-(global-set-key (kbd "C-c a") #'org-agenda)
-(global-set-key (kbd "C-c c") #'org-capture)
-(global-set-key (kbd "C-c l") #'org-store-link)
+
 (global-set-key (kbd "C-c r") (lambda () (interactive) (find-file my-org-someday-path)))
 (global-set-key (kbd "C-c m") (lambda () (interactive) (find-file my-org-meetings)))
-(global-set-key (kbd "C-c e o") (lambda () (interactive) (find-file my-org-path)))
 
 (setq org-agenda-custom-commands
       '(
@@ -222,10 +219,7 @@
        (replace-regexp-in-string "[^[:alnum:]_-]" "_" (org-get-heading t t t t))
        ".html") nil t nil nil))
 
-(general-define-key
- :keymaps 'org-mode-map
- :prefix "C-c e"
- "t" 'my/org-export-current-tree-to-html-to-desktop)
+(define-key org-mode-map (kbd "C-c e t") 'my/org-export-current-tree-to-html-to-desktop)
 
 (defun my/org-create-daily-note ()
   "Create or open an Org mode file named with the current date for daily notes."
@@ -246,5 +240,13 @@
 
 (global-set-key (kbd "C-c n d") 'my/org-create-daily-note)
 
-(provide 'org-config)
+;;; Key bindings
+
+(global-set-key (kbd "C-c a") 'org-agenda)
+(global-set-key (kbd "C-c c") 'org-capture)
+
+(global-set-key (kbd "C-c e o") (lambda () (interactive) (find-file my-org-path)))
+(global-set-key (kbd "C-c r") (lambda () (interactive) (find-file my-org-someday-path)))
+(global-set-key (kbd "C-c m") (lambda () (interactive) (find-file my-org-meetings)))
+
 ;;; org-config.el ends here

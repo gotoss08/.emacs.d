@@ -9,3 +9,6 @@ places
 server/
 tramp
 transient/
+eshell/
+recentf
+savehist
