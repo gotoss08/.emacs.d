@@ -16,32 +16,17 @@
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(require 'package)
 (with-eval-after-load 'package
   (add-to-list 'package-archives '("elpa" . "https://elpa.gnu.org/packages/") t)
   (add-to-list 'package-archives '("elpa-devel" . "https://elpa.gnu.org/devel/") t)
+  (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
   (add-to-list 'package-archives '("nongnu" . "https://elpa.nongnu.org/nongnu/") t)
   (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
   (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t))
+(package-initialize)
 
-;; (require 'package)
-;; (setq package-archives
-;;       '(("elpa" . "https://elpa.gnu.org/packages/")
-;;         ("elpa-devel" . "https://elpa.gnu.org/devel/")
-;;         ("nongnu" . "https://elpa.nongnu.org/nongnu/")
-;;         ("melpa" . "https://melpa.org/packages/")
-;; 	("org" . "http://orgmode.org/elpa/")))
-;; (package-initialize)
-
-    (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/"))
-
-(setq package-archives
-      '(("elpa" . "https://elpa.gnu.org/packages/")
-        ("elpa-devel" . "https://elpa.gnu.org/devel/")
-        ("nongnu" . "https://elpa.nongnu.org/nongnu/")
-        ("melpa" . "https://melpa.org/packages/")
-	    ("org" . "http://orgmode.org/elpa/")))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
 ;;;  Helper functions
 ;;;
@@ -515,6 +500,9 @@
   :config
   (setq wgrep-auto-save-buffer t))
 
+(use-package crux
+  :ensure t)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
 ;;;  Key Bindings
@@ -558,6 +546,22 @@
   (exchange-point-and-mark)
   (deactivate-mark nil))
 (define-key global-map [remap exchange-point-and-mark] 'exchange-point-and-mark-no-activate)
+
+(defun sum-hours-in-region (start end)
+  "Sum all numbers followed by час/часа/часов in selected region.
+Copy result to kill ring, move point to region start, and deactivate mark."
+  (interactive "r")
+  (let ((total 0))
+    (save-excursion
+      (goto-char start)
+      (while (re-search-forward "\\([0-9]+\\(?:\\.[0-9]+\\)?\\) *час[ао]?[в]?" end t)
+        (setq total (+ total (string-to-number (match-string 1))))))
+    (let ((total-str (number-to-string total)))
+      (kill-new total-str)
+      (goto-char start)              ; move point AFTER save-excursion
+      (deactivate-mark)
+      (message "Total hours: %s (copied to kill ring)" total-str)
+      total)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
