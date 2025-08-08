@@ -44,9 +44,11 @@
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(if (eq system-type 'windows-nt)
-    (setq my-onedrive-path "~/OneDrive/")
-  (setq my-onedrive-path "/mnt/c/Users/gotos/OneDrive/"))
+(when (eq system-type 'windows-nt)
+  (setq my-onedrive-path "~/OneDrive/"))
+
+(when (eq system-type 'darwin)
+  (setq my-onedrive-path "~/Library/CloudStorage/OneDrive-Личная/"))
 
 (setq my-org-path (expand-file-name "org" my-onedrive-path))
 
@@ -166,8 +168,12 @@
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(if (eq system-type 'darwin)
+    (set-frame-font "Monaco 16" nil t)
+  (set-frame-font "Aporetic Serif Mono 11" nil t))
+
 ;; (set-frame-font "Aporetic Sans Mono 11" nil t)
-(set-frame-font "Aporetic Serif Mono 11" nil t)
+;; (set-frame-font "Aporetic Serif Mono 11" nil t)
 ;; (set-frame-font "Sudo 14" nil t)
 ;; (set-frame-font "Terminess Nerd Font 13" nil t)
 ;; (set-frame-font "Terminus 12" nil t)
